@@ -195,11 +195,12 @@ const CGFloat contractionVelocity = 300.f;
 - (void)configureTitleLabelWithText:(NSString *)text fontName:(NSString *)fontName {
     if (self.titleLabel == nil) {
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.f,
-                                                                    self.view.bounds.size.height - self.titleLabelHeight - 3.f,
+                                                                    self.view.bounds.size.height - self.titleLabelHeight - 1.f,
                                                                     self.view.bounds.size.width,
                                                                     self.titleLabelHeight)];
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
         self.titleLabel.alpha = 0.f;
+        self.titleLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
         [self.view addSubview:self.titleLabel];
     }
     self.titleLabel.text = text;
