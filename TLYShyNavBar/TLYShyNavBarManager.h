@@ -21,6 +21,8 @@
  *
  */
 
+@protocol TLYShyExtensionView;
+
 @interface TLYShyNavBarManager : NSObject
 
 /* The view controller that is part of the navigation stack
@@ -35,7 +37,7 @@
 
 /* The extension view to be shown beneath the navbar
  */
-@property (nonatomic, strong) UIView *extensionView;
+@property (nonatomic, strong) UIView<TLYShyExtensionView> *extensionView;
 
 /* The container contains the extension view, if any. Exposed to
  * allow the developer to adjust content offset as necessary.

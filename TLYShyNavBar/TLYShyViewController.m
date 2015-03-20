@@ -12,6 +12,8 @@ const CGFloat contractionVelocity = 300.f;
 
 @interface TLYShyViewController ()
 
+@property (nonatomic, strong) UILabel *titleLabel;
+
 @property (nonatomic) CGPoint expandedCenterValue;
 @property (nonatomic) CGFloat contractionAmountValue;
 
@@ -65,14 +67,22 @@ const CGFloat contractionVelocity = 300.f;
 {
     for (UIView* view in self.view.subviews)
     {
-        bool isBackgroundView = view == self.view.subviews[0];
-        bool isViewHidden = view.hidden || view.alpha < FLT_EPSILON;
-        
-        if (!isBackgroundView && !isViewHidden)
-        {
-            view.alpha = alpha;
+        if (view == self.titleLabel) {
+            view.alpha = (1.f - alpha) > 0.5f ? 1.5f - 2.f * alpha : 0; //(0.5f - (alpha - 0.5f)*2)
+        } else {
+            bool isBackgroundView = view == self.view.subviews[0];
+            bool isViewHidden = view.hidden || view.alpha < FLT_EPSILON;
+
+            if (!isBackgroundView && !isViewHidden)
+            {
+                view.alpha = alpha;
+            }
         }
     }
+}
+
+- (void)dealloc {
+    [self.titleLabel removeFromSuperview];
 }
 
 #pragma mark - Public methods
@@ -176,6 +186,24 @@ const CGFloat contractionVelocity = 300.f;
     [self.child contract];
     
     return amountToMove;
+}
+
+- (CGFloat)titleLabelHeight {
+    return 15.0f;
+}
+
+- (void)configureTitleLabelWithText:(NSString *)text fontName:(NSString *)fontName {
+    if (self.titleLabel == nil) {
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.f,
+                                                                    self.view.bounds.size.height - self.titleLabelHeight - 3.f,
+                                                                    self.view.bounds.size.width,
+                                                                    self.titleLabelHeight)];
+        self.titleLabel.textAlignment = NSTextAlignmentCenter;
+        self.titleLabel.alpha = 0.f;
+        [self.view addSubview:self.titleLabel];
+    }
+    self.titleLabel.text = text;
+    self.titleLabel.font = [UIFont fontWithName:fontName size:12.0f];
 }
 
 @end

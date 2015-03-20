@@ -7,6 +7,7 @@
 //
 
 #import "TLYViewController.h"
+#import "TLYExtensionView.h"
 
 @interface TLYViewController ()
 
@@ -30,7 +31,7 @@
 {
     [super viewDidLoad];
     
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44.f)];
+    TLYExtensionView *view = [[TLYExtensionView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44.f)];
     view.backgroundColor = [UIColor redColor];
     
     /* Library code */
