@@ -26,6 +26,7 @@
 		829FEE001957DF620017E186 /* NSObject+TLYSwizzlingHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 829FEDFF1957DF620017E186 /* NSObject+TLYSwizzlingHelpers.m */; };
 		82B01ED3195D449F00C3C10C /* TLYDelegateProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 82B01ED2195D449F00C3C10C /* TLYDelegateProxy.m */; };
 		82C882091955FDA60046C49D /* UIViewController+BetterLayoutGuides.m in Sources */ = {isa = PBXBuildFile; fileRef = 82C882081955FDA60046C49D /* UIViewController+BetterLayoutGuides.m */; };
+		B7AFC61E1ABC17980062C885 /* TLYExtensionView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7AFC61D1ABC17980062C885 /* TLYExtensionView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,9 @@
 		82B01ED2195D449F00C3C10C /* TLYDelegateProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLYDelegateProxy.m; sourceTree = "<group>"; };
 		82C882071955FDA60046C49D /* UIViewController+BetterLayoutGuides.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+BetterLayoutGuides.h"; sourceTree = "<group>"; };
 		82C882081955FDA60046C49D /* UIViewController+BetterLayoutGuides.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+BetterLayoutGuides.m"; sourceTree = "<group>"; };
+		B7AFC61C1ABC17980062C885 /* TLYExtensionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLYExtensionView.h; sourceTree = "<group>"; };
+		B7AFC61D1ABC17980062C885 /* TLYExtensionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLYExtensionView.m; sourceTree = "<group>"; };
+		B7AFC6201ABC182B0062C885 /* TLYShyExtensionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLYShyExtensionView.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +139,8 @@
 				828F57351949C37B009EB8DD /* TLYViewController.m */,
 				828F57371949C37B009EB8DD /* Images.xcassets */,
 				828F57261949C37B009EB8DD /* Supporting Files */,
+				B7AFC61C1ABC17980062C885 /* TLYExtensionView.h */,
+				B7AFC61D1ABC17980062C885 /* TLYExtensionView.m */,
 			);
 			path = TLYShyNavBarDemo;
 			sourceTree = "<group>";
@@ -171,6 +177,7 @@
 		828F57541949C381009EB8DD /* TLYShyNavBar */ = {
 			isa = PBXGroup;
 			children = (
+				B7AFC61F1ABC17F50062C885 /* Protocols */,
 				82B01EDB195D580000C3C10C /* Categories */,
 				8268FA11194DBA58004EC0E4 /* TLYShyNavBarManager.h */,
 				8268FA12194DBA58004EC0E4 /* TLYShyNavBarManager.m */,
@@ -192,6 +199,14 @@
 				829FEDFF1957DF620017E186 /* NSObject+TLYSwizzlingHelpers.m */,
 			);
 			path = Categories;
+			sourceTree = "<group>";
+		};
+		B7AFC61F1ABC17F50062C885 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				B7AFC6201ABC182B0062C885 /* TLYShyExtensionView.h */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -300,6 +315,7 @@
 				829FEE001957DF620017E186 /* NSObject+TLYSwizzlingHelpers.m in Sources */,
 				828F57361949C37B009EB8DD /* TLYViewController.m in Sources */,
 				828F572C1949C37B009EB8DD /* main.m in Sources */,
+				B7AFC61E1ABC17980062C885 /* TLYExtensionView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

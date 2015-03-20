@@ -12,6 +12,7 @@
 
 #import "UIViewController+BetterLayoutGuides.h"
 #import "NSObject+TLYSwizzlingHelpers.h"
+#import "TLYShyExtensionView.h"
 
 #import <objc/runtime.h>
 
@@ -112,6 +113,8 @@ static inline CGFloat AACStatusBarHeight()
         self.extensionController = [[TLYShyViewController alloc] init];
         self.extensionController.view = self.extensionViewContainer;
         self.extensionController.hidesAfterContraction = YES;
+        self.extensionController.hidesSubviews = YES;
+        self.extensionController.alphaFadeEnabled = YES;
         self.extensionController.contractionAmount = ^(UIView *view)
         {
             return CGRectGetHeight(view.bounds);
@@ -148,7 +151,7 @@ static inline CGFloat AACStatusBarHeight()
 {
     _viewController = viewController;
     
-    UIView *navbar = viewController.navigationController.navigationBar;
+    UINavigationBar *navbar = viewController.navigationController.navigationBar;
     NSAssert(navbar != nil, @"You are using the component wrong... Please see the README file.");
     
     [self.extensionViewContainer removeFromSuperview];
@@ -303,7 +306,7 @@ static inline CGFloat AACStatusBarHeight()
 
 #pragma mark - public methods
 
-- (void)setExtensionView:(UIView *)view
+- (void)setExtensionView:(UIView<TLYShyExtensionView> *)view
 {
     if (view != _extensionView)
     {
@@ -317,7 +320,18 @@ static inline CGFloat AACStatusBarHeight()
         
         self.extensionViewContainer.frame = bounds;
         [self.extensionViewContainer addSubview:view];
-        
+
+
+        if (view.extensionViewTitle.length > 0)
+        {
+            [self.navBarController configureTitleLabelWithText:view.extensionViewTitle fontName:view.fontName];
+            __weak typeof(self) weakSelf = self;
+            self.navBarController.contractionAmount = ^(UIView *view)
+            {
+                return CGRectGetHeight(view.bounds) - weakSelf.navBarController.titleLabelHeight;
+            };
+        }
+
         [self layoutViews];
     }
 }
