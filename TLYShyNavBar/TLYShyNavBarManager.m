@@ -315,6 +315,7 @@ static inline CGFloat AACStatusBarHeight()
         
         CGRect bounds = view.frame;
         bounds.origin = CGPointZero;
+        bounds.size.width = self.viewController.view.bounds.size.width;
         
         view.frame = bounds;
 
