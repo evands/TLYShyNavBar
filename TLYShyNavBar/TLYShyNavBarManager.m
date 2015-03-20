@@ -317,10 +317,10 @@ static inline CGFloat AACStatusBarHeight()
         bounds.origin = CGPointZero;
         
         view.frame = bounds;
-        
+
+        view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.extensionViewContainer.frame = bounds;
         [self.extensionViewContainer addSubview:view];
-
 
         if (view.extensionViewTitle.length > 0)
         {
