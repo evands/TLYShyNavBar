@@ -12,5 +12,6 @@
 
 @property (nonatomic, copy, readonly) NSString *extensionViewTitle;
 @property (nonatomic, copy, readonly) NSString *fontName;
+@property (nonatomic, assign) BOOL needsUpdate;
 
 @end

@@ -101,11 +101,8 @@ static inline CGFloat AACStatusBarHeight()
                                CGRectGetMidY(view.bounds) + AACStatusBarHeight());
         };
         
-        self.navBarController.contractionAmount = ^(UIView *view)
-        {
-            return CGRectGetHeight(view.bounds);
-        };
-        
+        [self _setDefaultNavigationBarContractionAmount];
+
         self.extensionViewContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100.f, 0.f)];
         self.extensionViewContainer.backgroundColor = [UIColor clearColor];
         self.extensionViewContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleBottomMargin;
@@ -215,6 +212,14 @@ static inline CGFloat AACStatusBarHeight()
 
 #pragma mark - Private methods
 
+
+- (void)_setDefaultNavigationBarContractionAmount {
+    self.navBarController.contractionAmount = ^(UIView *view)
+    {
+        return CGRectGetHeight(view.bounds);
+    };
+}
+
 - (BOOL)_shouldHandleScrolling
 {
     if (self.disable)
@@ -229,13 +234,43 @@ static inline CGFloat AACStatusBarHeight()
     return (self.isViewControllerVisible && scrollViewIsSuffecientlyLong);
 }
 
+- (void)_updateTitleLabelIfNeeded {
+    if (self.extensionView.needsUpdate) {
+        self.extensionView.needsUpdate = NO;
+
+        if (self.extensionView.extensionViewTitle.length > 0)
+        {
+            __weak typeof(self) weakSelf = self;
+
+            void(^tapGestureBlock)(void) = ^{
+                [weakSelf.scrollView setContentOffset:CGPointMake(self.scrollView.contentOffset.x, -self.scrollView.contentInset.top) animated:YES];
+            };
+
+            [self.navBarController showAndConfigureTitleLabelWithText:self.extensionView.extensionViewTitle
+                                                             fontName:self.extensionView.fontName
+                                                      tapGestureBlock:tapGestureBlock];
+
+            self.navBarController.contractionAmount = ^(UIView *view)
+            {
+                return CGRectGetHeight(view.bounds) - weakSelf.navBarController.titleLabelHeight;
+            };
+        }
+        else
+        {
+            [self _setDefaultNavigationBarContractionAmount];
+        }
+    }
+}
+
 - (void)_handleScrolling
 {
     if (![self _shouldHandleScrolling])
     {
         return;
     }
-    
+
+    [self _updateTitleLabelIfNeeded];
+
     if (!isnan(self.previousYOffset))
     {
         // 1 - Calculate the delta
@@ -330,16 +365,6 @@ static inline CGFloat AACStatusBarHeight()
         view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.extensionViewContainer.frame = bounds;
         [self.extensionViewContainer addSubview:view];
-
-        if (view.extensionViewTitle.length > 0)
-        {
-            [self.navBarController configureTitleLabelWithText:view.extensionViewTitle fontName:view.fontName];
-            __weak typeof(self) weakSelf = self;
-            self.navBarController.contractionAmount = ^(UIView *view)
-            {
-                return CGRectGetHeight(view.bounds) - weakSelf.navBarController.titleLabelHeight;
-            };
-        }
 
         [self layoutViews];
     }
