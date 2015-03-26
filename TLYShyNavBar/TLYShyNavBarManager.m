@@ -29,7 +29,7 @@ static inline CGFloat AACStatusBarHeight()
     }
     
     CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
-    return MIN(statusBarSize.width, statusBarSize.height);
+    return MIN(MIN(statusBarSize.width, statusBarSize.height), 20.0f);
 }
 
 @implementation UIScrollView(Helper)
@@ -129,7 +129,15 @@ static inline CGFloat AACStatusBarHeight()
         
         self.navBarController.child = self.extensionController;
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidBecomeActive:)
+                                                     name:UIApplicationDidBecomeActiveNotification
+                                                   object:nil];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationdidChangeStatusBarFrame:)
+                                                     name:UIApplicationDidChangeStatusBarFrameNotification
+                                                   object:nil];
     }
     return self;
 }
@@ -390,8 +398,12 @@ static inline CGFloat AACStatusBarHeight()
 
 #pragma mark - NSNotificationCenter methods
 
-- (void)applicationDidBecomeActive
+- (void)applicationDidBecomeActive:(NSNotification *)notification
 {
+    [self.navBarController expand];
+}
+
+- (void)applicationdidChangeStatusBarFrame:(NSNotification *)notification {
     [self.navBarController expand];
 }
 
