@@ -11,6 +11,7 @@
 @implementation TLYExtensionView
 
 @synthesize extensionViewTitle = _extensionViewTitle;
+@synthesize needsUpdate = _needsUpdate;
 
 - (NSString *)extensionViewTitle {
     return @"WTFox Say";

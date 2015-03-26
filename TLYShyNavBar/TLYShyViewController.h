@@ -48,6 +48,7 @@ typedef CGFloat(^TLYShyViewControllerContractionAmountBlock)(UIView *view);
 - (CGFloat)contract;
 
 - (CGFloat)titleLabelHeight;
-- (void)configureTitleLabelWithText:(NSString *)text fontName:(NSString *)fontName;
+- (void)showAndConfigureTitleLabelWithText:(NSString *)text fontName:(NSString *)fontName tapGestureBlock:(void(^)(void))tapGestureBlock;
+- (void)hideTitleLabel;
 
 @end

@@ -21,6 +21,7 @@ const CGFloat contractionVelocity = 300.f;
 
 @property (nonatomic, getter = isContracted) BOOL contracted;
 @property (nonatomic, getter = isExpanded) BOOL expanded;
+@property (nonatomic, copy) void(^tapGestureBlock)(void);
 
 @end
 
@@ -192,7 +193,7 @@ const CGFloat contractionVelocity = 300.f;
     return 15.0f;
 }
 
-- (void)configureTitleLabelWithText:(NSString *)text fontName:(NSString *)fontName {
+- (void)showAndConfigureTitleLabelWithText:(NSString *)text fontName:(NSString *)fontName tapGestureBlock:(void (^)(void))tapGestureBlock {
     if (self.titleLabel == nil) {
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.f,
                                                                     self.view.bounds.size.height - self.titleLabelHeight - 1.f,
@@ -201,10 +202,26 @@ const CGFloat contractionVelocity = 300.f;
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
         self.titleLabel.alpha = 0.f;
         self.titleLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+        self.titleLabel.userInteractionEnabled = YES;
         [self.view addSubview:self.titleLabel];
+
+        UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_navBarGestureDidRecognizeTap:)];
+        self.tapGestureBlock = tapGestureBlock;
+        [self.titleLabel addGestureRecognizer:recognizer];
     }
     self.titleLabel.text = text;
     self.titleLabel.font = [UIFont fontWithName:fontName size:12.0f];
+}
+
+- (void)hideTitleLabel {
+    [self.titleLabel removeFromSuperview];
+    self.titleLabel = nil;
+}
+
+- (void)_navBarGestureDidRecognizeTap:(UIGestureRecognizer *)sender {
+    if (self.tapGestureBlock) {
+        self.tapGestureBlock();
+    }
 }
 
 @end

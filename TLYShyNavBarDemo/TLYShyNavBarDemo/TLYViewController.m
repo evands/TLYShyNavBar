@@ -33,6 +33,7 @@
     
     TLYExtensionView *view = [[TLYExtensionView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44.f)];
     view.backgroundColor = [UIColor redColor];
+    view.needsUpdate = YES;
     
     /* Library code */
     self.shyNavBarManager.scrollView = self.scrollView;
