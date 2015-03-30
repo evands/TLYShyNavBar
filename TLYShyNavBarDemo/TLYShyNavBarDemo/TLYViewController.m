@@ -9,7 +9,7 @@
 #import "TLYViewController.h"
 #import "TLYExtensionView.h"
 
-@interface TLYViewController ()
+@interface TLYViewController () <TLYShyNavBarManagerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
@@ -37,6 +37,7 @@
     
     /* Library code */
     self.shyNavBarManager.scrollView = self.scrollView;
+    self.shyNavBarManager.delegate = self;
     /* Can then be remove by setting the ExtensionView to nil */
     [self.shyNavBarManager setExtensionView:view];
 }
@@ -45,6 +46,10 @@
 {
     [super viewDidLayoutSubviews];
     self.scrollView.contentSize = self.imageView.bounds.size;
+}
+
+- (void)shyNavBarManager:(TLYShyNavBarManager *)manager didChangeExtensionViewHidden:(BOOL)hidden {
+    NSLog(@"Hidden %i", hidden);
 }
 
 @end

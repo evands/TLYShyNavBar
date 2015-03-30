@@ -24,8 +24,11 @@ typedef CGFloat(^TLYShyViewControllerContractionAmountBlock)(UIView *view);
  *  the TLYShyViewController can only be a maximum depth of 2. Adding a
  *  child to an already childified node is not supported.
  */
+@protocol TLYShyViewControllerDelegate;
 
 @interface TLYShyViewController : NSObject
+
+@property (nonatomic, weak) id<TLYShyViewControllerDelegate> delegate;
 
 @property (nonatomic, weak) TLYShyViewController *child;
 @property (nonatomic, weak) UIView *view;
@@ -52,3 +55,11 @@ typedef CGFloat(^TLYShyViewControllerContractionAmountBlock)(UIView *view);
 - (void)hideTitleLabel;
 
 @end
+
+@protocol TLYShyViewControllerDelegate <NSObject>
+
+@optional
+- (void)shyViewController:(TLYShyViewController *)shyViewController didChangeChildViewHidden:(BOOL)childIsHidden;
+
+@end
+

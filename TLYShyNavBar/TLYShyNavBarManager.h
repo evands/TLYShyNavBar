@@ -23,7 +23,11 @@
 
 @protocol TLYShyExtensionView;
 
+@protocol TLYShyNavBarManagerDelegate;
+
 @interface TLYShyNavBarManager : NSObject
+
+@property (nonatomic, weak) id<TLYShyNavBarManagerDelegate> delegate;
 
 /* The view controller that is part of the navigation stack
  * IMPORTANT: Must have access to navigationController
@@ -56,6 +60,13 @@
 @property (nonatomic, getter = isAlphaFadeEnabled) BOOL alphaFadeEnabled;
 
 @property (nonatomic) BOOL disable;
+
+@end
+
+@protocol TLYShyNavBarManagerDelegate <NSObject>
+
+@optional
+- (void)shyNavBarManager:(TLYShyNavBarManager *)manager didChangeExtensionViewHidden:(BOOL)hidden;
 
 @end
 

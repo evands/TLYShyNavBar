@@ -98,12 +98,22 @@ const CGFloat contractionVelocity = 300.f;
     }
 }
 
+- (void)setChildViewHidden:(BOOL)hidden {
+    if (self.child.view.hidden != hidden) {
+        self.child.view.hidden = hidden;
+
+        if ([self.delegate respondsToSelector:@selector(shyViewController:didChangeChildViewHidden:)]) {
+            [self.delegate shyViewController:self didChangeChildViewHidden:hidden];
+        }
+    }
+}
+
 - (CGFloat)updateYOffset:(CGFloat)deltaY
 {
     if (self.child && deltaY < 0)
     {
         deltaY = [self.child updateYOffset:deltaY];
-        self.child.view.hidden = (deltaY) < 0;
+        [self setChildViewHidden:(deltaY) < 0];
     }
     
     CGFloat newYOffset = self.view.center.y + deltaY;
@@ -127,7 +137,8 @@ const CGFloat contractionVelocity = 300.f;
     if (self.child && deltaY > 0 && residual > 0)
     {
         residual = [self.child updateYOffset:residual];
-        self.child.view.hidden = residual - (newYOffset - newYCenter) > FLT_EPSILON;
+        BOOL isHidden = (residual - (newYOffset - newYCenter)) > FLT_EPSILON;
+        [self setChildViewHidden:isHidden];
     }
     
     return residual;
