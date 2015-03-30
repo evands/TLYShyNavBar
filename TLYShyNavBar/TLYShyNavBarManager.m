@@ -51,7 +51,7 @@ static inline CGFloat AACStatusBarHeight()
 
 #pragma mark - TLYShyNavBarManager class
 
-@interface TLYShyNavBarManager () <UIScrollViewDelegate>
+@interface TLYShyNavBarManager () <UIScrollViewDelegate, TLYShyViewControllerDelegate>
 
 @property (nonatomic, strong) TLYShyViewController *navBarController;
 @property (nonatomic, strong) TLYShyViewController *extensionController;
@@ -94,6 +94,7 @@ static inline CGFloat AACStatusBarHeight()
         self.previousYOffset = NAN;
         
         self.navBarController = [[TLYShyViewController alloc] init];
+        self.navBarController.delegate = self;
         self.navBarController.hidesSubviews = YES;
         self.navBarController.expandedCenter = ^(UIView *view)
         {
@@ -148,6 +149,12 @@ static inline CGFloat AACStatusBarHeight()
     }
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)shyViewController:(TLYShyViewController *)shyViewController didChangeChildViewHidden:(BOOL)childIsHidden {
+    if ([self.delegate respondsToSelector:@selector(shyNavBarManager:didChangeExtensionViewHidden:)]) {
+        [self.delegate shyNavBarManager:self didChangeExtensionViewHidden:childIsHidden];
+    }
 }
 
 #pragma mark - Properties
