@@ -13,6 +13,7 @@
 #import "UIViewController+BetterLayoutGuides.h"
 #import "NSObject+TLYSwizzlingHelpers.h"
 #import "TLYShyExtensionView.h"
+#import "TLYStatusBarHeight.h"
 
 #import <objc/runtime.h>
 
@@ -21,16 +22,16 @@
 // Thanks to SO user, MattDiPasquale
 // http://stackoverflow.com/questions/12991935/how-to-programmatically-get-ios-status-bar-height/16598350#16598350
 
-static inline CGFloat AACStatusBarHeight()
-{
-    if ([UIApplication sharedApplication].statusBarHidden)
-    {
-        return 0.f;
-    }
-    
-    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
-    return MIN(MIN(statusBarSize.width, statusBarSize.height), 20.0f);
-}
+//static inline CGFloat AACStatusBarHeight()
+//{
+////    if ([UIApplication sharedApplication].statusBarHidden)
+////    {
+////        return 0.f;
+////    }
+////    
+////    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+////    return MIN(MIN(statusBarSize.width, statusBarSize.height), 20.0f);
+//}
 
 @implementation UIScrollView(Helper)
 
@@ -99,7 +100,7 @@ static inline CGFloat AACStatusBarHeight()
         self.navBarController.expandedCenter = ^(UIView *view)
         {
             return CGPointMake(CGRectGetMidX(view.bounds),
-                               CGRectGetMidY(view.bounds) + AACStatusBarHeight());
+                               CGRectGetMidY(view.bounds) + [TLYStatusBarHeight statusBarHeight]);
         };
         
         [self _setDefaultNavigationBarContractionAmount];
@@ -156,6 +157,16 @@ static inline CGFloat AACStatusBarHeight()
         [self.delegate shyNavBarManager:self didChangeExtensionViewHidden:childIsHidden];
     }
 }
+
+- (void)shyViewController:(TLYShyViewController *)shyViewController
+  childIsVisibleInPercent:(CGFloat)visiblePercent
+           changeAnimated:(BOOL)animated
+                 withTime:(NSTimeInterval)animationTime {
+    if ([self.delegate respondsToSelector:@selector(shyNavBarManager:childIsVisibleInPercent:changeAnimated:withTime:)]) {
+        [self.delegate shyNavBarManager:self childIsVisibleInPercent:visiblePercent changeAnimated:animated withTime:animationTime];
+    }
+}
+
 
 #pragma mark - Properties
 
@@ -276,7 +287,7 @@ static inline CGFloat AACStatusBarHeight()
     } else {
         offset = self.navBarController.view.center.y;
     }
-    self.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(AACStatusBarHeight() + offset,
+    self.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake([TLYStatusBarHeight statusBarHeight] + offset,
                                                              self.scrollView.scrollIndicatorInsets.left,
                                                              self.scrollView.scrollIndicatorInsets.bottom,
                                                              self.scrollView.scrollIndicatorInsets.right);
@@ -331,7 +342,7 @@ static inline CGFloat AACStatusBarHeight()
 
             deltaY = MIN(0, availableResistance + deltaY);
         }
-        else if (self.scrollView.contentOffset.y > -AACStatusBarHeight())
+        else if (self.scrollView.contentOffset.y > -[TLYStatusBarHeight statusBarHeight])
         {
             CGFloat availableResistance = self.expansionResistance - self.resistanceConsumed;
             self.resistanceConsumed = MIN(self.expansionResistance, self.resistanceConsumed + deltaY);

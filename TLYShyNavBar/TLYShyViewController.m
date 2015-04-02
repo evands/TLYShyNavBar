@@ -7,6 +7,7 @@
 //
 
 #import "TLYShyViewController.h"
+#import "TLYStatusBarHeight.h"
 
 const CGFloat contractionVelocity = 300.f;
 
@@ -108,6 +109,20 @@ const CGFloat contractionVelocity = 300.f;
     }
 }
 
+- (void)_sendToDelegateChildVisiblePercent {
+    if (self.child) {
+        CGFloat minOffsetValue = self.view.frame.size.height - self.child.view.frame.size.height;
+        CGFloat offset = (self.child.view.frame.origin.y - minOffsetValue - [TLYStatusBarHeight statusBarHeight]);
+
+        if ([self.delegate respondsToSelector:@selector(shyViewController:childIsVisibleInPercent:changeAnimated:withTime:)]) {
+            [self.delegate shyViewController:self
+                     childIsVisibleInPercent:offset/self.child.view.frame.size.height
+                              changeAnimated:NO
+                                    withTime:0];
+        }
+    }
+}
+
 - (CGFloat)updateYOffset:(CGFloat)deltaY
 {
     if (self.child && deltaY < 0)
@@ -140,7 +155,8 @@ const CGFloat contractionVelocity = 300.f;
         BOOL isHidden = (residual - (newYOffset - newYCenter)) > FLT_EPSILON;
         [self setChildViewHidden:isHidden];
     }
-    
+
+    [self _sendToDelegateChildVisiblePercent];
     return residual;
 }
 
@@ -158,7 +174,10 @@ const CGFloat contractionVelocity = 300.f;
      */
     
     __block CGFloat deltaY;
-    [UIView animateWithDuration:0.2 animations:^
+    __block BOOL didExpand = NO;
+    NSTimeInterval animationTime = 0.2;
+
+    [UIView animateWithDuration:animationTime animations:^
     {
         if ((contract && self.child.isContracted) || (!contract && !self.isExpanded))
         {
@@ -167,9 +186,19 @@ const CGFloat contractionVelocity = 300.f;
         else
         {
             deltaY = [self.child expand];
+            didExpand = YES;
         }
     }];
-    
+
+    if (didExpand == YES
+        && [self.delegate respondsToSelector:@selector(shyViewController:childIsVisibleInPercent:changeAnimated:withTime:)]) {
+
+        [self.delegate shyViewController:self
+                 childIsVisibleInPercent:1.0f
+                          changeAnimated:YES
+                                withTime:animationTime];
+    }
+
     return deltaY;
 }
 
