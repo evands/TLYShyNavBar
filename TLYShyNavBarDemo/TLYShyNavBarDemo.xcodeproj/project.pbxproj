@@ -26,6 +26,7 @@
 		829FEE001957DF620017E186 /* NSObject+TLYSwizzlingHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 829FEDFF1957DF620017E186 /* NSObject+TLYSwizzlingHelpers.m */; };
 		82B01ED3195D449F00C3C10C /* TLYDelegateProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 82B01ED2195D449F00C3C10C /* TLYDelegateProxy.m */; };
 		82C882091955FDA60046C49D /* UIViewController+BetterLayoutGuides.m in Sources */ = {isa = PBXBuildFile; fileRef = 82C882081955FDA60046C49D /* UIViewController+BetterLayoutGuides.m */; };
+		B78BAB111ACD693D000B4AF3 /* TLYStatusBarHeight.m in Sources */ = {isa = PBXBuildFile; fileRef = B78BAB101ACD693D000B4AF3 /* TLYStatusBarHeight.m */; };
 		B7AFC61E1ABC17980062C885 /* TLYExtensionView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7AFC61D1ABC17980062C885 /* TLYExtensionView.m */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,8 @@
 		82B01ED2195D449F00C3C10C /* TLYDelegateProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLYDelegateProxy.m; sourceTree = "<group>"; };
 		82C882071955FDA60046C49D /* UIViewController+BetterLayoutGuides.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+BetterLayoutGuides.h"; sourceTree = "<group>"; };
 		82C882081955FDA60046C49D /* UIViewController+BetterLayoutGuides.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+BetterLayoutGuides.m"; sourceTree = "<group>"; };
+		B78BAB0F1ACD693D000B4AF3 /* TLYStatusBarHeight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLYStatusBarHeight.h; sourceTree = "<group>"; };
+		B78BAB101ACD693D000B4AF3 /* TLYStatusBarHeight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLYStatusBarHeight.m; sourceTree = "<group>"; };
 		B7AFC61C1ABC17980062C885 /* TLYExtensionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLYExtensionView.h; sourceTree = "<group>"; };
 		B7AFC61D1ABC17980062C885 /* TLYExtensionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLYExtensionView.m; sourceTree = "<group>"; };
 		B7AFC6201ABC182B0062C885 /* TLYShyExtensionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLYShyExtensionView.h; sourceTree = "<group>"; };
@@ -185,6 +188,8 @@
 				8268FA01194C926F004EC0E4 /* TLYShyViewController.m */,
 				82B01ED1195D449F00C3C10C /* TLYDelegateProxy.h */,
 				82B01ED2195D449F00C3C10C /* TLYDelegateProxy.m */,
+				B78BAB0F1ACD693D000B4AF3 /* TLYStatusBarHeight.h */,
+				B78BAB101ACD693D000B4AF3 /* TLYStatusBarHeight.m */,
 			);
 			name = TLYShyNavBar;
 			path = ../TLYShyNavBar;
@@ -309,6 +314,7 @@
 			files = (
 				8268FA13194DBA58004EC0E4 /* TLYShyNavBarManager.m in Sources */,
 				82C882091955FDA60046C49D /* UIViewController+BetterLayoutGuides.m in Sources */,
+				B78BAB111ACD693D000B4AF3 /* TLYStatusBarHeight.m in Sources */,
 				828F57301949C37B009EB8DD /* TLYAppDelegate.m in Sources */,
 				82B01ED3195D449F00C3C10C /* TLYDelegateProxy.m in Sources */,
 				8268FA02194C926F004EC0E4 /* TLYShyViewController.m in Sources */,
