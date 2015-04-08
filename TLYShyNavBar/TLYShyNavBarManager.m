@@ -438,7 +438,16 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    [self _handleScrolling];
+    switch (scrollView.panGestureRecognizer.state) {
+        case UIGestureRecognizerStateBegan:
+        case UIGestureRecognizerStateChanged:
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+            [self _handleScrolling];
+            break;
+        default:
+            break;
+    }
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
