@@ -484,11 +484,21 @@ static char shyNavBarManagerKey;
         [self tly_swizzleInstanceMethod:@selector(viewWillDisappear:) withReplacement:@selector(tly_swizzledViewWillDisappear:)];
         [self tly_swizzleInstanceMethod:@selector(viewWillTransitionToSize:withTransitionCoordinator:)
                         withReplacement:@selector(tly_swizzledViewWillTransitionToSize:withTransitionCoordinator:)];
+        [self tly_swizzleInstanceMethod:@selector(didRotateFromInterfaceOrientation:)
+                        withReplacement:@selector(tly_swizzledDidRotateFromInterfaceOrientation:)];
 
     });
 }
 
 #pragma mark - Swizzled View Life Cycle
+
+-(void)tly_swizzledDidRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    __weak typeof (self) weakself = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[weakself _internalShyNavBarManager] _handleScrollingEnded];
+    });
+    [self tly_swizzledDidRotateFromInterfaceOrientation:fromInterfaceOrientation];
+}
 
 - (void)tly_swizzledViewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     __weak typeof (self) weakself = self;
