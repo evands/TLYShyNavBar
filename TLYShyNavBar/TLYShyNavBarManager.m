@@ -438,16 +438,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    switch (scrollView.panGestureRecognizer.state) {
-        case UIGestureRecognizerStateBegan:
-        case UIGestureRecognizerStateChanged:
-        case UIGestureRecognizerStateEnded:
-        case UIGestureRecognizerStateCancelled:
-            [self _handleScrolling];
-            break;
-        default:
-            break;
-    }
+    [self _handleScrolling];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
@@ -491,10 +482,21 @@ static char shyNavBarManagerKey;
         [self tly_swizzleInstanceMethod:@selector(viewWillAppear:) withReplacement:@selector(tly_swizzledViewWillAppear:)];
         [self tly_swizzleInstanceMethod:@selector(viewWillLayoutSubviews) withReplacement:@selector(tly_swizzledViewDidLayoutSubviews)];
         [self tly_swizzleInstanceMethod:@selector(viewWillDisappear:) withReplacement:@selector(tly_swizzledViewWillDisappear:)];
+        [self tly_swizzleInstanceMethod:@selector(viewWillTransitionToSize:withTransitionCoordinator:)
+                        withReplacement:@selector(tly_swizzledViewWillTransitionToSize:withTransitionCoordinator:)];
+
     });
 }
 
 #pragma mark - Swizzled View Life Cycle
+
+- (void)tly_swizzledViewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    __weak typeof (self) weakself = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[weakself _internalShyNavBarManager] _handleScrollingEnded];
+    });
+    [self tly_swizzledViewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
 
 - (void)tly_swizzledViewWillAppear:(BOOL)animated
 {
