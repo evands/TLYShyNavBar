@@ -103,23 +103,29 @@ const CGFloat contractionVelocity = 300.f;
     if (self.child.view.hidden != hidden) {
         self.child.view.hidden = hidden;
 
-        if ([self.delegate respondsToSelector:@selector(shyViewController:didChangeChildViewHidden:)]) {
-            [self.delegate shyViewController:self didChangeChildViewHidden:hidden];
-        }
+        [self _informDelegateChildIsVisibleInPercent:0.0f
+                                            animated:NO
+                               withAnimationDuration:0];
     }
 }
 
-- (void)_sendToDelegateChildVisiblePercent {
+- (void)_informDelegateAboutChildVisibility {
     if (self.child) {
         CGFloat minOffsetValue = self.view.frame.size.height - self.child.view.frame.size.height;
         CGFloat offset = (self.child.view.frame.origin.y - minOffsetValue - [TLYStatusBarHeight statusBarHeight]);
 
-        if ([self.delegate respondsToSelector:@selector(shyViewController:childIsVisibleInPercent:changeAnimated:withTime:)]) {
-            [self.delegate shyViewController:self
-                     childIsVisibleInPercent:offset/self.child.view.frame.size.height
-                              changeAnimated:NO
-                                    withTime:0];
-        }
+        [self _informDelegateChildIsVisibleInPercent:offset/self.child.view.frame.size.height
+                                            animated:NO
+                               withAnimationDuration:0];
+    }
+}
+
+- (void)_informDelegateChildIsVisibleInPercent:(CGFloat)percent animated:(BOOL)animated withAnimationDuration:(NSTimeInterval)duration {
+    if ([self.delegate respondsToSelector:@selector(shyViewController:childIsVisibleInPercent:changeAnimated:withAnimationDuration:)]) {
+        [self.delegate shyViewController:self
+                 childIsVisibleInPercent:percent
+                          changeAnimated:animated
+                                withAnimationDuration:duration];
     }
 }
 
@@ -156,7 +162,7 @@ const CGFloat contractionVelocity = 300.f;
         [self setChildViewHidden:isHidden];
     }
 
-    [self _sendToDelegateChildVisiblePercent];
+    [self _informDelegateAboutChildVisibility];
     return residual;
 }
 
@@ -190,13 +196,10 @@ const CGFloat contractionVelocity = 300.f;
         }
     }];
 
-    if (didExpand == YES
-        && [self.delegate respondsToSelector:@selector(shyViewController:childIsVisibleInPercent:changeAnimated:withTime:)]) {
-
-        [self.delegate shyViewController:self
-                 childIsVisibleInPercent:1.0f
-                          changeAnimated:YES
-                                withTime:animationTime];
+    if (didExpand == YES) {
+        [self _informDelegateChildIsVisibleInPercent:1.0f
+                                            animated:YES
+                               withAnimationDuration:animationTime];
     }
 
     return deltaY;
@@ -215,7 +218,8 @@ const CGFloat contractionVelocity = 300.f;
 
     self.view.center = self.expandedCenterValue;
     [self.child expand];
-    
+    [self _informDelegateAboutChildVisibility];
+
     return amountToMove;
 }
 

@@ -52,7 +52,7 @@
     NSLog(@"Hidden %i", hidden);
 }
 
-- (void)shyNavBarManager:(TLYShyNavBarManager *)manager childIsVisibleInPercent:(CGFloat)visiblePercent changeAnimated:(BOOL)animated withTime:(NSTimeInterval)animationTime {
+- (void)shyNavBarManager:(TLYShyNavBarManager *)manager childIsVisibleInPercent:(CGFloat)visiblePercent changeAnimated:(BOOL)animated withAnimationDuration:(NSTimeInterval)animationTime {
     NSLog(@"visiblePercent: %f \nchangeAnimated: %i \nanimationTime: %f", visiblePercent, animated, animationTime);
 }
 

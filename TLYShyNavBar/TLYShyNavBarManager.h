@@ -66,11 +66,10 @@
 @protocol TLYShyNavBarManagerDelegate <NSObject>
 
 @optional
-- (void)shyNavBarManager:(TLYShyNavBarManager *)manager didChangeExtensionViewHidden:(BOOL)hidden;
 - (void)shyNavBarManager:(TLYShyNavBarManager *)manager
  childIsVisibleInPercent:(CGFloat)visiblePercent
           changeAnimated:(BOOL)animated
-                withTime:(NSTimeInterval)animationTime;
+   withAnimationDuration:(NSTimeInterval)animationDuration;
 
 
 @end
