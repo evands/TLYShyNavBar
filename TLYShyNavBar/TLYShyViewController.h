@@ -64,7 +64,7 @@ typedef CGFloat(^TLYShyViewControllerContractionAmountBlock)(UIView *view);
 - (void)shyViewController:(TLYShyViewController *)shyViewController
   childIsVisibleInPercent:(CGFloat)visiblePercent
            changeAnimated:(BOOL)animated
-                 withTime:(NSTimeInterval)animationTime;
+                 withAnimationDuration:(NSTimeInterval)animationTime;
 
 @end
 

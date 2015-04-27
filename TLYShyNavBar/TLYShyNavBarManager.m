@@ -161,9 +161,9 @@
 - (void)shyViewController:(TLYShyViewController *)shyViewController
   childIsVisibleInPercent:(CGFloat)visiblePercent
            changeAnimated:(BOOL)animated
-                 withTime:(NSTimeInterval)animationTime {
-    if ([self.delegate respondsToSelector:@selector(shyNavBarManager:childIsVisibleInPercent:changeAnimated:withTime:)]) {
-        [self.delegate shyNavBarManager:self childIsVisibleInPercent:visiblePercent changeAnimated:animated withTime:animationTime];
+    withAnimationDuration:(NSTimeInterval)animationDuration {
+    if ([self.delegate respondsToSelector:@selector(shyNavBarManager:childIsVisibleInPercent:changeAnimated:withAnimationDuration:)]) {
+        [self.delegate shyNavBarManager:self childIsVisibleInPercent:visiblePercent changeAnimated:animated withAnimationDuration:animationDuration];
     }
 }
 
