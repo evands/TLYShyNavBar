@@ -103,13 +103,9 @@ const CGFloat contractionVelocity = 300.f;
     if (self.child.view.hidden != hidden) {
         self.child.view.hidden = hidden;
 
-        [self _informDelegateChildViewIsHidden:hidden];
-    }
-}
-
-- (void)_informDelegateChildViewIsHidden:(BOOL)hidden {
-    if ([self.delegate respondsToSelector:@selector(shyViewController:didChangeChildViewHidden:)]) {
-        [self.delegate shyViewController:self didChangeChildViewHidden:hidden];
+        [self _informDelegateChildIsVisibleInPercent:0.0f
+                                            animated:NO
+                               withAnimationDuration:0];
     }
 }
 
@@ -223,7 +219,6 @@ const CGFloat contractionVelocity = 300.f;
     self.view.center = self.expandedCenterValue;
     [self.child expand];
     [self _informDelegateAboutChildVisibility];
-    [self _informDelegateChildViewIsHidden:NO];
 
     return amountToMove;
 }

@@ -152,12 +152,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)shyViewController:(TLYShyViewController *)shyViewController didChangeChildViewHidden:(BOOL)childIsHidden {
-    if ([self.delegate respondsToSelector:@selector(shyNavBarManager:didChangeExtensionViewHidden:)]) {
-        [self.delegate shyNavBarManager:self didChangeExtensionViewHidden:childIsHidden];
-    }
-}
-
 - (void)shyViewController:(TLYShyViewController *)shyViewController
   childIsVisibleInPercent:(CGFloat)visiblePercent
            changeAnimated:(BOOL)animated
