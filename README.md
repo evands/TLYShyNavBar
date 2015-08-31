@@ -19,46 +19,41 @@ This component helps you mimick the navigation bar auto scrolling that you see i
 + **[A Deeper Look](#a-deeper-look)**: You're invensted in this now and want to make the most out of it.
 + **[How it Works](#how-it-works)**: The deep stuff...
 + **[Remarks](#remarks)**: Read this before losing all hope.
++ **[Contributors](#contributors)**: Developers that donated their valuable time.
++ **[Author](#author)**: Watashi-da!
 + **[Similar Projects](#similar-projects)**: Similar projects that influenced the project in some way.
 
 ## Features
 
-+ Optional extension view to the `UINavigationBar`!
+| Feature | Demo |
+|---------|---------------------------------------------------------------------------------------------------------
+| Optional extension view to the `UINavigationBar`!                               | ![](resources/ShyNavBar-1.gif) |
+| Auto expand if below threshold                                                  | ![](resources/ShyNavBar-2.gif) |
+| Auto contract if below threshold                                                | ![](resources/ShyNavBar-3.gif) |
+| Very responsive, resilient and robust                                           | ![](resources/ShyNavBar-4.gif) |
+| Adjustable expansion resistance                                                 | ![](resources/ShyNavBar-5.gif) |
+| Plays well with `pushViewController`                                            | ![](resources/ShyNavBar-6.gif) |
+| Sticky extension view (Thanks @yukaliao !)                                      | ![](resources/ShyNavBar-7.gif) |
+| Sticky navigation bar (Thanks [@TiagoVeloso](https://github.com/TiagoVeloso)!)  | ![](resources/ShyNavBar-9.gif) |
+| Fade the entire navbar (Thanks [__@longsview__](https://github.com/longsview)!) | ![](resources/ShyNavBar-8.gif) |
 
-![](resources/ShyNavBar-1.gif)
+You can test some of these features in the Objective-C demo:
 
-+ Auto expand if below threshold
-
-![](resources/ShyNavBar-2.gif)
-
-+ Auto contract if below threshold
-
-![](resources/ShyNavBar-3.gif)
-
-+ Very responsive, resilient and robust
-
-![](resources/ShyNavBar-4.gif)
-
-+ Adjustable expansion resistance
-
-![](resources/ShyNavBar-5.gif)
-
-+ Plays well with `pushViewController`
-
-![](resources/ShyNavBar-6.gif)
+![](resources/features-testing.png)
 
 ## Quick Start
 
 1. Get the component
-  + [CocoaPods](http://cocoapods.org)
-      * Add the following to you [Podfile](http://guides.cocoapods.org/using/the-podfile.html) `pod TLYShyNavBar`
+  + Using [CocoaPods](http://cocoapods.org):<br />
+    Add the following to you [Podfile](http://guides.cocoapods.org/using/the-podfile.html) `pod 'TLYShyNavBar'`<br />
+    Import the header `#import <TLYShyNavBar/TLYShyNavBarManager.h>`
 
-  + Download the project/git submodules, and drag the `TLYShyNavBar` folder to your project.
 
-2. `#import "TLYShyNavBarManager.h"` 
-  + I suggest adding it to your pch file, or wherever you want to use the component.
+  + Using Submodules:<br />
+    Download the project/git submodules, and drag the `TLYShyNavBar` folder to your project. <br />
+    Import the header `#import "TLYShyNavBarManager.h"`
  
-3. Write one line of code to get started!!
+2. Write one line of code to get started!!
 
 ```objc
 /* In your UIViewController viewDidLoad or after creating the scroll view. */
@@ -144,7 +139,7 @@ You can control that using the following properties on the `shyNavBarManager`:
 
 ## How it Works
 
-OK, I'll admit that I added this section purely to rant about how this project came together, and the desicion making process behind it.
+OK, I'll admit that I added this section purely to rant about how this project came together, and the decision making process behind it.
 
 #### THE BASICS
 
@@ -170,21 +165,23 @@ This one was a pain... First, the experiments that this project went through inc
 + Adding a `UIPanGestureRecognizer` to the scroll view.
 + Make the user implement `UIScrollViewDelegate`, and send us the events.
 
-The above didn't yield the perfect experience we were hoping for, except the last one. It did, however, make for redundant code everywhere, and forced the component user to implement the `UIScrollViewDelegate`. Tha's when the `NSProxy` happened.
+The above didn't yield the perfect experience we were hoping for, except the last one. It did, however, make for redundant code everywhere, and forced the component user to implement the `UIScrollViewDelegate`. That's when the `NSProxy` happened.
 
 When you assign the `scrollView` property to the TLYShyNavBarManager, we attach a proxy object to the `UIScrollView` as the delegate, and then the original delegate to that proxy. The proxy forwards the events we are interested in to the `TLYShyNavBarManager`, and of course, does everything else normally for the original selector, you won't even notice a thing!
 
 #### THE DRAWER CONCEPT
 
-The way the offsets are applied to the navigation bar and extension view is through an elegent linked list implementation. We set the offset to the first node (navigation bar), and ...
+The way the offsets are applied to the navigation bar and extension view is through an elegant doubly linked list implementation. We set the offset to the first node (navigation bar), and ...
 
 + If it is contracting:
-  - We pass the contraction amount to the next node, and it returned a residual amount.
+  - We pass the contraction amount to the next node, and it returns a residual amount.
 
 + If we are expanding:
   - We process the offset in the first node, and pass the residual to the next node. 
 
-It is a simple concept. Say we dragged down by 100 px, and the nav bar was contracted. The navigation bar would take 64 px of that to expand, and then pass the residual 36 px to the next node (extension view) to calculate its offset. The same goes for contracting, but it starts from the last node, all the way up to the navigation bar.
+It is a simple concept. Say we dragged down by 100 px while the navbar was contracted. The navigation bar would take 44 px of that to expand, and then pass the residual 56 px to the next node (extension view) to calculate its offset. The same goes for contracting, but it starts from the last node, all the way up to the navigation bar.
+
+We also add a parent relationship for a single purpose: Make the child follow its parent's offset. So, if the parent (e.g. navigation bar) is scrolling away to the top, we make sure the child accommodates the parent's offset in the calculation, so it appears as if the child is a subview of the parent.
 
 *Note:* Even though there might be an illusion that the views are expanding and contracting, it's really just a translation (scrolling) of the views. There might be an advantage to actually resizing the bounds, so the extension view doesn't appear behind the navigation bar, for example, so that approach might be explored in the future.
 
@@ -205,6 +202,32 @@ shyManager.expansionResistance = 777.f;
 /* ... sometime after the view controller is added to the hierarchy  */
 viewController.shyNavBarManager = shyManager;
 ```
+
+## Contributors
+
+Thanks for everyone who opened an issue, shot me an email, and submitted a PR. Special thanks to those who submitted code that got checked in!
+
+_Sorted vaguely based on contribution according to [this](http://www.commandlinefu.com/commands/view/4519/list-all-authors-of-a-particular-git-project)_
+
++ Evan D. Schoenberg, M.D 
++ Tony Nuzzi 
++ Xurxo Méndez Pérez 
++ Richard Das 
++ Garret Riddle 
++ Aleksey Kozhevnikov 
++ modastic 
++ Yukan 
++ Remigiusz Herba 
++ Nicholas Long 
++ Koen Buddelmeijer 
++ Anton Sokolchenko 
++ Andrii Novoselskyi 
++ Alek Slater 
++ Aaron Satterfield 
+
+## Author
+
+Mazyod ([@Mazyod](http://twitter.com/mazyod))
 
 ## Similar Projects
 

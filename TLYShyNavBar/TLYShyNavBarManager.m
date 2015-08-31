@@ -10,8 +10,8 @@
 #import "TLYShyViewController.h"
 #import "TLYDelegateProxy.h"
 
-#import "UIViewController+BetterLayoutGuides.h"
-#import "NSObject+TLYSwizzlingHelpers.h"
+#import "Categories/UIViewController+BetterLayoutGuides.h"
+#import "Categories/NSObject+TLYSwizzlingHelpers.h"
 
 #import <objc/runtime.h>
 
@@ -33,8 +33,11 @@ static inline CGFloat AACStatusBarHeight(UIViewController *viewController)
     
     UIView *view = viewController.view;
     CGRect frame = [view.superview convertRect:view.frame toView:view.window];
+    
     BOOL viewOverlapsStatusBar = frame.origin.y < statusBarHeight;
-    if (!viewOverlapsStatusBar) {
+    
+    if (!viewOverlapsStatusBar)
+    {
         return 0.f;
     }
     
@@ -60,10 +63,48 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
 
 @end
 
+
+@interface TLYShyStatusBarController : NSObject <TLYShyViewControllerParent>
+
+@property (nonatomic, weak) UIViewController *viewController;
+
+@end
+
+@implementation TLYShyStatusBarController
+
+- (CGFloat)_statusBarHeight
+{
+    CGFloat statusBarHeight = AACStatusBarHeight(self.viewController);
+    /* The standard status bar is 20 pixels. The navigation bar extends 20 pixels up so it is overlapped by the status bar.
+     * When there is a larger than 20 pixel status bar (e.g. a phone call is in progress or GPS is active), the center needs
+     * to shift up 20 pixels to avoid this 'dead space' being visible above the usual nav bar.
+     */
+    if (statusBarHeight > 20)
+    {
+        statusBarHeight -= 20;
+    }
+    
+    return statusBarHeight;
+}
+
+- (CGFloat)viewMaxY
+{
+    return [self _statusBarHeight];
+}
+
+- (CGFloat)calculateTotalHeightRecursively
+{
+    return [self _statusBarHeight];
+}
+
+@end
+
+
 #pragma mark - TLYShyNavBarManager class
 
 @interface TLYShyNavBarManager () <UIScrollViewDelegate>
 
+@property (nonatomic, strong) id<TLYShyViewControllerParent> statusBarController;
 @property (nonatomic, strong) TLYShyViewController *navBarController;
 @property (nonatomic, strong) TLYShyViewController *extensionController;
 
@@ -99,33 +140,15 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
         self.expansionResistance = 200.f;
         self.contractionResistance = 0.f;
         
-        self.alphaFadeEnabled = YES;
+        self.fadeBehavior = TLYShyNavBarFadeSubviews;
         
         self.previousScrollInsets = UIEdgeInsetsZero;
         self.previousYOffset = NAN;
         
-        self.navBarController = [[TLYShyViewController alloc] init];
-        self.navBarController.hidesSubviews = YES;
-        __weak __typeof(self) weakSelf = self;
-
-        self.navBarController.expandedCenter = ^(UIView *view)
-        {
-            CGFloat statusBarHeight = AACStatusBarHeight(weakSelf.viewController);
-            /* The standard status bar is 20 pixels. The navigation bar extends 20 pixels up so it is overlapped by the status bar.
-             * When there is a larger than 20 pixel status bar (e.g. a phone call is in progress or GPS is active), the center needs
-             * to shift up 20 pixels to avoid this 'dead space' being visible above the usual nav bar.
-             */
-            if (statusBarHeight > 20)
-                statusBarHeight -= 20;
-
-            return CGPointMake(CGRectGetMidX(view.bounds),
-                               CGRectGetMidY(view.bounds) + statusBarHeight);
-        };
+        self.statusBarController = [[TLYShyStatusBarController alloc] init];
         
-        self.navBarController.contractionAmount = ^(UIView *view)
-        {
-            return CGRectGetHeight(view.bounds);
-        };
+        self.navBarController = [[TLYShyViewController alloc] init];
+        self.navBarController.parent = self.statusBarController;
         
         self.extensionViewContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100.f, 0.f)];
         self.extensionViewContainer.backgroundColor = [UIColor clearColor];
@@ -133,18 +156,8 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
         
         self.extensionController = [[TLYShyViewController alloc] init];
         self.extensionController.view = self.extensionViewContainer;
-        self.extensionController.hidesAfterContraction = YES;
-        self.extensionController.contractionAmount = ^(UIView *view)
-        {
-            return CGRectGetHeight(view.bounds);
-        };
-        
-        self.extensionController.expandedCenter = ^(UIView *view)
-        {
-            return CGPointMake(CGRectGetMidX(view.bounds),
-                               CGRectGetMidY(view.bounds) + weakSelf.viewController.tly_topLayoutGuide.length);
-        };
-        
+        self.extensionController.parent = self.navBarController;
+
         self.navBarController.child = self.extensionController;
         
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -235,14 +248,26 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
     }
 }
 
+- (BOOL)stickyNavigationBar
+{
+    return self.navBarController.sticky;
+}
+
+- (void)setStickyNavigationBar:(BOOL)stickyNavigationBar
+{
+    self.navBarController.sticky = stickyNavigationBar;
+}
+
+- (BOOL)stickyExtensionView
+{
+    return self.extensionController.sticky;
+}
+
 - (void)setStickyExtensionView:(BOOL)stickyExtensionView
 {
-    _stickyExtensionView = stickyExtensionView;
-    
-    if (self.navBarController) {
-        self.navBarController.stickyExtensionView = YES;
-    }
+    self.extensionController.sticky = stickyExtensionView;
 }
+
 
 #pragma mark - Private methods
 
@@ -278,7 +303,7 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
         CGFloat start = -self.scrollView.contentInset.top;
         if (self.previousYOffset < start)
         {
-            deltaY = MIN(0, deltaY - self.previousYOffset - start);
+            deltaY = MIN(0, deltaY - (self.previousYOffset - start));
         }
         
         /* rounding to resolve a dumb issue with the contentOffset value */
@@ -317,8 +342,10 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
             deltaY = MAX(0, deltaY - availableResistance);
         }
         
-        // 6 - Update the shyViewController
-        self.navBarController.alphaFadeEnabled = self.alphaFadeEnabled;
+        // 6 - Update the navigation bar shyViewController
+        self.navBarController.fadeBehavior = (TLYShyNavViewControllerFade)self.fadeBehavior;
+        
+        
         [self.navBarController updateYOffset:deltaY];
     }
     
@@ -381,6 +408,7 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
         
         self.extensionViewContainer.frame = bounds;
         [self.extensionViewContainer addSubview:view];
+        self.extensionViewContainer.userInteractionEnabled = view.userInteractionEnabled;
 
         /* Disable scroll handling temporarily while laying out views to avoid double-changing content
          * offsets in _handleScrolling. */
@@ -399,7 +427,7 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
 - (void)layoutViews
 {
     UIEdgeInsets scrollInsets = self.scrollView.contentInset;
-    scrollInsets.top = CGRectGetHeight(self.extensionViewContainer.bounds) + self.viewController.tly_topLayoutGuide.length;
+    scrollInsets.top = [self.extensionController calculateTotalHeightRecursively];
     
     if (UIEdgeInsetsEqualToEdgeInsets(scrollInsets, self.previousScrollInsets))
     {
@@ -526,6 +554,33 @@ static char shyNavBarManagerKey;
 - (TLYShyNavBarManager *)_internalShyNavBarManager
 {
     return objc_getAssociatedObject(self, &shyNavBarManagerKey);
+}
+
+@end
+
+
+#pragma mark - Deprecated -
+
+@implementation TLYShyNavBarManager (Deprecated)
+
+- (BOOL)isAlphaFadeEnabled
+{
+    return self.fadeBehavior != TLYShyNavBarFadeDisabled;
+}
+
+- (void)setAlphaFadeEnabled:(BOOL)alphaFadeEnabled
+{
+    self.fadeBehavior = alphaFadeEnabled ? TLYShyNavBarFadeSubviews : TLYShyNavBarFadeDisabled;
+}
+
+- (BOOL)isAlphaFadeEntireNavBarEnabled
+{
+    return self.fadeBehavior != TLYShyNavBarFadeNavbar;
+}
+
+- (void)setAlphaFadeEntireNavBar:(BOOL)alphaFadeEntireNavBar
+{
+    self.fadeBehavior = alphaFadeEntireNavBar ? TLYShyNavBarFadeNavbar : TLYShyNavBarFadeDisabled;
 }
 
 @end
