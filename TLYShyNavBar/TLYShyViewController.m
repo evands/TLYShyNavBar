@@ -102,7 +102,12 @@ const CGFloat contractionVelocity = 300.f;
     
     if (self.stickyExtensionView) {
         CGFloat newChildYOffset = self.child.view.center.y + deltaY;
-        CGFloat newChildYCenter = MAX(MIN(self.child.expandedCenterValue.y, newChildYOffset), self.child.contractedCenterValue.y);
+        CGFloat newChildYCenter = MAX(MIN(self.child.expandedCenterValue.y,
+                                          newChildYOffset),
+                                      self.child.contractedCenterValue.y);
+        //Don't allow a sticky extension view to move off screen; its center should never be more than half its height from the top of the view
+        newChildYCenter = MAX(newChildYCenter, CGRectGetHeight(self.child.view.bounds)/2.0f);
+
         self.child.view.center = CGPointMake(self.child.expandedCenterValue.x, newChildYCenter);
     }
     
