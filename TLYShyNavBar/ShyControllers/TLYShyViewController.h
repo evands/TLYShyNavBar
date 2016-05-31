@@ -33,7 +33,7 @@ typedef CGFloat(^TLYShyViewControllerContractionAmountBlock)(UIView *view);
 
 @interface TLYShyViewController : NSObject <TLYShyChild>
 
-@property (nonatomic, getter = isContracted, readonly) BOOL contracted;
+@property (nonatomic, readonly) BOOL contracted;
 @property (nonatomic, weak) id<TLYShyViewControllerDelegate> delegate;
 
 @property (nonatomic, weak) id<TLYShyChild> child;

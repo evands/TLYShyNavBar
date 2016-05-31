@@ -298,7 +298,7 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
 
 - (void)_updateScrollViewIndicatorInsets {
     CGFloat offset = 0;
-    if (!self.navBarController.subShyController.isContracted) {
+    if (!self.navBarController.subShyController.contracted) {
         offset = self.navBarController.subShyController.view.center.y;
     } else {
         offset = self.navBarController.view.center.y;
