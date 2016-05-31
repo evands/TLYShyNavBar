@@ -95,11 +95,7 @@ Pod::Spec.new do |s|
   s.source_files  = "TLYShyNavBar/**/*"
   s.exclude_files = ""
 
-<<<<<<< HEAD
-  s.public_header_files = "TLYShyNavBar/TLYShyNavBarManager.h", "TLYShyNavBar/Protocols/TLYShyExtensionView.h"
-=======
   s.public_header_files = "TLYShyNavBar/*.h"
->>>>>>> remotes/telly/master
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
