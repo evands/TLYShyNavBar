@@ -9,19 +9,36 @@
 #import "TLYShyViewController.h"
 #import "TLYStatusBarHeight.h"
 
-const CGFloat contractionVelocity = 300.f;
+@implementation TLYShyViewController (AsParent)
+
+- (CGFloat)maxYRelativeToView:(UIView *)superview
+{
+    CGPoint maxEdge = CGPointMake(0, CGRectGetHeight(self.view.bounds));
+    CGPoint normalizedMaxEdge = [superview convertPoint:maxEdge fromView:self.view];
+    
+    return normalizedMaxEdge.y;
+}
+
+- (CGFloat)calculateTotalHeightRecursively
+{
+    return CGRectGetHeight(self.view.bounds) + [self.parent calculateTotalHeightRecursively];
+}
+
+@end
+
 
 @interface TLYShyViewController ()
 
 @property (nonatomic, strong) UILabel *titleLabel;
 
-@property (nonatomic) CGPoint expandedCenterValue;
-@property (nonatomic) CGFloat contractionAmountValue;
+@property (nonatomic, assign) CGPoint expandedCenterValue;
+@property (nonatomic, assign) CGFloat contractionAmountValue;
 
-@property (nonatomic) CGPoint contractedCenterValue;
+@property (nonatomic, assign) CGPoint contractedCenterValue;
 
-@property (nonatomic, getter = isContracted) BOOL contracted;
-@property (nonatomic, getter = isExpanded) BOOL expanded;
+@property (nonatomic, assign) BOOL contracted;
+@property (nonatomic, assign) BOOL expanded;
+
 @property (nonatomic, copy) void(^tapGestureBlock)(void);
 
 @end
@@ -33,12 +50,22 @@ const CGFloat contractionVelocity = 300.f;
 // convenience
 - (CGPoint)expandedCenterValue
 {
-    return self.expandedCenter(self.view);
+    CGPoint center = CGPointMake(CGRectGetMidX(self.view.bounds),
+                                 CGRectGetMidY(self.view.bounds));
+    
+    center.y += [self.parent maxYRelativeToView:self.view.superview];
+    
+    return center;
 }
 
 - (CGFloat)contractionAmountValue
 {
-    return self.contractionAmount(self.view);
+    CGFloat amount = self.sticky ? 0.f : CGRectGetHeight(self.view.bounds);
+    if (self.contractionAmountModifier == nil) {
+        return amount;
+    } else {
+        return amount + self.contractionAmountModifier();
+    }
 }
 
 - (CGPoint)contractedCenterValue
@@ -46,26 +73,49 @@ const CGFloat contractionVelocity = 300.f;
     return CGPointMake(self.expandedCenterValue.x, self.expandedCenterValue.y - self.contractionAmountValue);
 }
 
-- (BOOL)isContracted
+- (BOOL)contracted
 {
     return fabs(self.view.center.y - self.contractedCenterValue.y) < FLT_EPSILON;
 }
 
-- (BOOL)isExpanded
+- (BOOL)expanded
 {
     return fabs(self.view.center.y - self.expandedCenterValue.y) < FLT_EPSILON;
 }
 
-- (CGFloat)totalHeight
-{
-    return self.child.totalHeight + (self.expandedCenterValue.y - self.contractedCenterValue.y);
-}
-
 #pragma mark - Private methods
+
+- (void)_onAlphaUpdate:(CGFloat)alpha
+{
+    if (self.sticky)
+    {
+        self.view.alpha = 1.f;
+        [self _updateSubviewsAlpha:1.f];
+        return;
+    }
+    
+    switch (self.fadeBehavior) {
+            
+        case TLYShyNavBarFadeDisabled:
+            self.view.alpha = 1.f;
+            [self _updateSubviewsAlpha:1.f];
+            break;
+            
+        case TLYShyNavBarFadeSubviews:
+            self.view.alpha = 1.f;
+            [self _updateSubviewsAlpha:alpha];
+            break;
+            
+        case TLYShyNavBarFadeNavbar:
+            self.view.alpha = alpha;
+            [self _updateSubviewsAlpha:1.f];
+            break;
+    }
+}
 
 // This method is courtesy of GTScrollNavigationBar
 // https://github.com/luugiathuy/GTScrollNavigationBar
-- (void)_updateSubviewsToAlpha:(CGFloat)alpha
+- (void)_updateSubviewsAlpha:(CGFloat)alpha
 {
     for (UIView* view in self.view.subviews)
     {
@@ -74,7 +124,7 @@ const CGFloat contractionVelocity = 300.f;
         } else {
             bool isBackgroundView = view == self.view.subviews[0];
             bool isViewHidden = view.hidden || view.alpha < FLT_EPSILON;
-
+            
             if (!isBackgroundView && !isViewHidden)
             {
                 view.alpha = alpha;
@@ -87,22 +137,39 @@ const CGFloat contractionVelocity = 300.f;
     [self.titleLabel removeFromSuperview];
 }
 
+- (void)_updateCenter:(CGPoint)newCenter
+{
+    CGPoint currentCenter = self.view.center;
+    CGPoint deltaPoint = CGPointMake(newCenter.x - currentCenter.x,
+                                     newCenter.y - currentCenter.y);
+    
+    [self offsetCenterBy:deltaPoint];
+}
+
 #pragma mark - Public methods
 
-- (void)setAlphaFadeEnabled:(BOOL)alphaFadeEnabled
+- (void)setFadeBehavior:(TLYShyNavBarFade)fadeBehavior
 {
-    _alphaFadeEnabled = alphaFadeEnabled;
+    _fadeBehavior = fadeBehavior;
     
-    if (!alphaFadeEnabled)
+    if (fadeBehavior == TLYShyNavBarFadeDisabled)
     {
-        [self _updateSubviewsToAlpha:1.f];
+        [self _onAlphaUpdate:1.f];
     }
 }
 
-- (void)setChildViewHidden:(BOOL)hidden {
-    if (self.child.view.hidden != hidden) {
-        self.child.view.hidden = hidden;
+- (void)offsetCenterBy:(CGPoint)deltaPoint
+{
+    self.view.center = CGPointMake(self.view.center.x + deltaPoint.x,
+                                   self.view.center.y + deltaPoint.y);
+    
+    [self.child offsetCenterBy:deltaPoint];
+}
 
+- (void)setChildViewHidden:(BOOL)hidden {
+    if (self.subShyController.view.hidden != hidden) {
+        self.subShyController.view.hidden = hidden;
+        
         [self _informDelegateChildIsVisibleInPercent:0.0f
                                             animated:NO
                                withAnimationDuration:0];
@@ -111,10 +178,10 @@ const CGFloat contractionVelocity = 300.f;
 
 - (void)_informDelegateAboutChildVisibility {
     if (self.child) {
-        CGFloat minOffsetValue = self.view.frame.size.height - self.child.view.frame.size.height;
-        CGFloat offset = (self.child.view.frame.origin.y - minOffsetValue - [TLYStatusBarHeight statusBarHeight]);
-
-        [self _informDelegateChildIsVisibleInPercent:offset/self.child.view.frame.size.height
+        CGFloat minOffsetValue = self.view.frame.size.height - self.subShyController.view.frame.size.height;
+        CGFloat offset = (self.subShyController.view.frame.origin.y - minOffsetValue - [TLYStatusBarHeight statusBarHeight]);
+        
+        [self _informDelegateChildIsVisibleInPercent:offset/self.subShyController.view.frame.size.height
                                             animated:NO
                                withAnimationDuration:0];
     }
@@ -125,48 +192,56 @@ const CGFloat contractionVelocity = 300.f;
         [self.delegate shyViewController:self
                  childIsVisibleInPercent:percent
                           changeAnimated:animated
-                                withAnimationDuration:duration];
+                   withAnimationDuration:duration];
     }
 }
 
 - (CGFloat)updateYOffset:(CGFloat)deltaY
-{
-    if (self.child && deltaY < 0)
+{    
+    if (self.subShyController && deltaY < 0)
     {
-        deltaY = [self.child updateYOffset:deltaY];
-        [self setChildViewHidden:(deltaY) < 0];
+        deltaY = [self.subShyController updateYOffset:deltaY];
     }
     
-    CGFloat newYOffset = self.view.center.y + deltaY;
-    CGFloat newYCenter = MAX(MIN(self.expandedCenterValue.y, newYOffset), self.contractedCenterValue.y);
+    CGFloat residual = deltaY;
     
-    self.view.center = CGPointMake(self.expandedCenterValue.x, newYCenter);
-    
-    if (self.hidesSubviews)
+    if (!self.sticky)
     {
+        CGFloat newYOffset = self.view.center.y + deltaY;
+        CGFloat newYCenter = MAX(MIN(self.expandedCenterValue.y, newYOffset), self.contractedCenterValue.y);
+        
+        [self _updateCenter:CGPointMake(self.expandedCenterValue.x, newYCenter)];
+        
         CGFloat newAlpha = 1.f - (self.expandedCenterValue.y - self.view.center.y) / self.contractionAmountValue;
         newAlpha = MIN(MAX(FLT_EPSILON, newAlpha), 1.f);
         
-        if (self.alphaFadeEnabled)
+        [self _onAlphaUpdate:newAlpha];
+        
+        residual = newYOffset - newYCenter;
+        
+        // QUICK FIX: Only the extensionView is hidden
+        if (!self.subShyController)
         {
-            [self _updateSubviewsToAlpha:newAlpha];
+            self.view.hidden = residual < 0;
         }
     }
     
-    CGFloat residual = newYOffset - newYCenter;
-    
-    if (self.child && deltaY > 0 && residual > 0)
+    if (self.subShyController && deltaY > 0 && residual > 0)
     {
-        residual = [self.child updateYOffset:residual];
-        BOOL isHidden = (residual - (newYOffset - newYCenter)) > FLT_EPSILON;
-        [self setChildViewHidden:isHidden];
+        residual = [self.subShyController updateYOffset:residual];
     }
-
+    
     [self _informDelegateAboutChildVisibility];
+    
     return residual;
 }
 
 - (CGFloat)snap:(BOOL)contract
+{
+    return [self snap:contract completion:nil];
+}
+
+- (CGFloat)snap:(BOOL)contract completion:(void (^)())completion
 {
     /* "The Facebook" UX dictates that:
      *
@@ -182,26 +257,32 @@ const CGFloat contractionVelocity = 300.f;
     __block CGFloat deltaY;
     __block BOOL didExpand = NO;
     NSTimeInterval animationTime = 0.2;
-
+    
     [UIView animateWithDuration:animationTime animations:^
     {
-        if ((contract && self.child.isContracted) || (!contract && !self.isExpanded))
+        if ((contract && self.subShyController.contracted) || (!contract && !self.expanded))
         {
             deltaY = [self contract];
         }
         else
         {
-            deltaY = [self.child expand];
+            deltaY = [self.subShyController expand];
             didExpand = YES;
         }
+    }
+                     completion:^(BOOL finished)
+    {
+        if (completion && finished) {
+            completion();
+        }
     }];
-
+    
     if (didExpand == YES) {
         [self _informDelegateChildIsVisibleInPercent:1.0f
                                             animated:YES
                                withAnimationDuration:animationTime];
     }
-
+    
     return deltaY;
 }
 
@@ -209,17 +290,15 @@ const CGFloat contractionVelocity = 300.f;
 {
     self.view.hidden = NO;
     
-    if (self.hidesSubviews && self.alphaFadeEnabled)
-    {
-        [self _updateSubviewsToAlpha:1.f];
-    }
+    [self _onAlphaUpdate:1.f];
     
     CGFloat amountToMove = self.expandedCenterValue.y - self.view.center.y;
 
-    self.view.center = self.expandedCenterValue;
-    [self.child expand];
+    [self _updateCenter:self.expandedCenterValue];
+    [self.subShyController expand];
+    
     [self _informDelegateAboutChildVisibility];
-
+    
     return amountToMove;
 }
 
@@ -227,8 +306,10 @@ const CGFloat contractionVelocity = 300.f;
 {
     CGFloat amountToMove = self.contractedCenterValue.y - self.view.center.y;
 
-    self.view.center = self.contractedCenterValue;
-    [self.child contract];
+    [self _onAlphaUpdate:FLT_EPSILON];
+
+    [self _updateCenter:self.contractedCenterValue];
+    [self.subShyController contract];
     
     return amountToMove;
 }
@@ -248,7 +329,7 @@ const CGFloat contractionVelocity = 300.f;
         self.titleLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
         self.titleLabel.userInteractionEnabled = YES;
         [self.view addSubview:self.titleLabel];
-
+        
         UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_navBarGestureDidRecognizeTap:)];
         self.tapGestureBlock = tapGestureBlock;
         [self.titleLabel addGestureRecognizer:recognizer];
