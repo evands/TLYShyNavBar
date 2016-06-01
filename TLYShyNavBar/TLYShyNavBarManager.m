@@ -18,7 +18,6 @@
 #import "Categories/UIScrollView+Helpers.h"
 
 #import "TLYShyExtensionView.h"
-#import "TLYStatusBarHeight.h"
 
 #import <objc/runtime.h>
 
@@ -296,19 +295,6 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
     }
 }
 
-- (void)_updateScrollViewIndicatorInsets {
-    CGFloat offset = 0;
-    if (!self.navBarController.subShyController.contracted) {
-        offset = self.navBarController.subShyController.view.center.y;
-    } else {
-        offset = self.navBarController.view.center.y;
-    }
-    self.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake([TLYStatusBarHeight statusBarHeight] + offset,
-                                                             self.scrollView.scrollIndicatorInsets.left,
-                                                             self.scrollView.scrollIndicatorInsets.bottom,
-                                                             self.scrollView.scrollIndicatorInsets.right);
-}
-
 - (void)_handleScrolling
 {
     if (![self _shouldHandleScrolling])
@@ -390,8 +376,6 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
         }
 
         [self.navBarController updateYOffset:deltaY];
-
-        [self _updateScrollViewIndicatorInsets];
     }
 
     self.previousYOffset = self.scrollView.contentOffset.y;

@@ -27,6 +27,7 @@
     
     TLYExtensionView *view = view = [[TLYExtensionView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 40.f)];
     view.backgroundColor = [UIColor redColor];
+    view.needsUpdate = YES;
     
     /* Library code */
     self.shyNavBarManager.scrollView = self.tableView;
