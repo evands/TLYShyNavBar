@@ -363,7 +363,7 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
             deltaY = MIN(0, availableResistance + deltaY);
         }
         // 5.2 - Only apply resistance if expanding above the status bar
-        else if (self.scrollView.contentOffset.y > -[TLYStatusBarHeight statusBarHeight])
+        else if (self.scrollView.contentOffset.y > 0)
         {
             CGFloat availableResistance = self.expansionResistance - self.resistanceConsumed;
             self.resistanceConsumed = MIN(self.expansionResistance, self.resistanceConsumed + deltaY);
@@ -469,7 +469,6 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
          * offsets in _handleScrolling. */
         BOOL wasDisabled = self.disable;
         self.disable = YES;
-
         [self layoutViews];
         self.disable = wasDisabled;
     }

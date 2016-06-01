@@ -60,11 +60,15 @@
 
 - (CGFloat)contractionAmountValue
 {
-    CGFloat amount = self.sticky ? 0.f : CGRectGetHeight(self.view.bounds);
-    if (self.contractionAmountModifier == nil) {
-        return amount;
+    if (self.sticky) {
+        return 0.0;
     } else {
-        return amount + self.contractionAmountModifier();
+        CGFloat amount = CGRectGetHeight(self.view.bounds);
+        if (self.contractionAmountModifier == nil) {
+            return amount;
+        } else {
+            return amount + self.contractionAmountModifier();
+        }
     }
 }
 
@@ -164,16 +168,6 @@
                                    self.view.center.y + deltaPoint.y);
     
     [self.child offsetCenterBy:deltaPoint];
-}
-
-- (void)setChildViewHidden:(BOOL)hidden {
-    if (self.subShyController.view.hidden != hidden) {
-        self.subShyController.view.hidden = hidden;
-        
-        [self _informDelegateChildIsVisibleInPercent:0.0f
-                                            animated:NO
-                               withAnimationDuration:0];
-    }
 }
 
 - (void)_informDelegateAboutChildVisibility {
