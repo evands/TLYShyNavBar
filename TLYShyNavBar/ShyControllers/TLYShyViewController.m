@@ -174,8 +174,8 @@
     if (self.child) {
         CGFloat minOffsetValue = self.view.frame.size.height - self.subShyController.view.frame.size.height;
         CGFloat offset = (self.subShyController.view.frame.origin.y - minOffsetValue - [TLYStatusBarHeight statusBarHeight]);
-        
-        [self _informDelegateChildIsVisibleInPercent:offset/self.subShyController.view.frame.size.height
+        CGFloat percent = MAX(MIN(1.0, offset/self.subShyController.view.frame.size.height), 0.0);
+        [self _informDelegateChildIsVisibleInPercent:percent
                                             animated:NO
                                withAnimationDuration:0];
     }
