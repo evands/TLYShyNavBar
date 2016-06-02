@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 #import "TLYShyParent.h"
 #import "TLYShyChild.h"
-#import "../TLYShyNavBarFade.h"
+#import "TLYShyNavBarFade.h"
 
 
 extern const CGFloat contractionVelocity;

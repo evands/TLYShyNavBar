@@ -27,6 +27,9 @@
 		A21BFFFD1BFDD41100F9FB54 /* TLYShyChild.h in Headers */ = {isa = PBXBuildFile; fileRef = A21BFFF51BFDD41100F9FB54 /* TLYShyChild.h */; };
 		A21BFFFE1BFDD41100F9FB54 /* TLYShyParent.h in Headers */ = {isa = PBXBuildFile; fileRef = A21BFFF61BFDD41100F9FB54 /* TLYShyParent.h */; };
 		A21BFFFF1BFDD41100F9FB54 /* TLYShyScrollViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = A21BFFF71BFDD41100F9FB54 /* TLYShyScrollViewController.h */; };
+		D4B679B31D00272100FEBB3E /* TLYStatusBarHeight.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B679B11D00272100FEBB3E /* TLYStatusBarHeight.h */; };
+		D4B679B41D00272100FEBB3E /* TLYStatusBarHeight.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B679B21D00272100FEBB3E /* TLYStatusBarHeight.m */; };
+		D4B679B71D00273100FEBB3E /* TLYShyExtensionView.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B679B61D00273100FEBB3E /* TLYShyExtensionView.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +55,9 @@
 		A21BFFFA1BFDD41100F9FB54 /* TLYShyStatusBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TLYShyStatusBarController.m; path = ShyControllers/TLYShyStatusBarController.m; sourceTree = "<group>"; };
 		A21BFFFB1BFDD41100F9FB54 /* TLYShyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TLYShyViewController.h; path = ShyControllers/TLYShyViewController.h; sourceTree = "<group>"; };
 		A21BFFFC1BFDD41100F9FB54 /* TLYShyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TLYShyViewController.m; path = ShyControllers/TLYShyViewController.m; sourceTree = "<group>"; };
+		D4B679B11D00272100FEBB3E /* TLYStatusBarHeight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLYStatusBarHeight.h; sourceTree = "<group>"; };
+		D4B679B21D00272100FEBB3E /* TLYStatusBarHeight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLYStatusBarHeight.m; sourceTree = "<group>"; };
+		D4B679B61D00273100FEBB3E /* TLYShyExtensionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLYShyExtensionView.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,10 +82,13 @@
 		A21BFFA51BFDCC8800F9FB54 /* TLYShyNavBar */ = {
 			isa = PBXGroup;
 			children = (
+				D4B679B11D00272100FEBB3E /* TLYStatusBarHeight.h */,
+				D4B679B21D00272100FEBB3E /* TLYStatusBarHeight.m */,
 				A21B00051BFDD41900F9FB54 /* TLYShyNavBarFade.h */,
 				A21B00061BFDD41900F9FB54 /* TLYShyNavBarManager.h */,
 				A21B00071BFDD41900F9FB54 /* TLYShyNavBarManager.m */,
 				A21BFFDE1BFDD1A500F9FB54 /* Categories */,
+				D4B679B51D00273100FEBB3E /* Protocols */,
 				A21BFFCD1BFDD18D00F9FB54 /* ShyControllers */,
 				A21BFFA61BFDCC8800F9FB54 /* TLYShyNavBar.h */,
 				A21BFFAD1BFDCD5100F9FB54 /* Supporting Files */,
@@ -133,6 +142,14 @@
 			name = Categories;
 			sourceTree = "<group>";
 		};
+		D4B679B51D00273100FEBB3E /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				D4B679B61D00273100FEBB3E /* TLYShyExtensionView.h */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -150,7 +167,9 @@
 				A21BFFF11BFDD40800F9FB54 /* UIScrollView+Helpers.h in Headers */,
 				A21B00031BFDD41100F9FB54 /* TLYShyViewController.h in Headers */,
 				A21BFFFF1BFDD41100F9FB54 /* TLYShyScrollViewController.h in Headers */,
+				D4B679B31D00272100FEBB3E /* TLYStatusBarHeight.h in Headers */,
 				A21BFFA71BFDCC8800F9FB54 /* TLYShyNavBar.h in Headers */,
+				D4B679B71D00273100FEBB3E /* TLYShyExtensionView.h in Headers */,
 				A21BFFFE1BFDD41100F9FB54 /* TLYShyParent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -223,6 +242,7 @@
 			files = (
 				A21B00041BFDD41100F9FB54 /* TLYShyViewController.m in Sources */,
 				A21BFFF21BFDD40800F9FB54 /* UIScrollView+Helpers.m in Sources */,
+				D4B679B41D00272100FEBB3E /* TLYStatusBarHeight.m in Sources */,
 				A21B000A1BFDD41900F9FB54 /* TLYShyNavBarManager.m in Sources */,
 				A21BFFF41BFDD40800F9FB54 /* UIViewController+BetterLayoutGuides.m in Sources */,
 				A21BFFEE1BFDD40800F9FB54 /* NSObject+TLYSwizzlingHelpers.m in Sources */,
