@@ -7,7 +7,7 @@
 //
 
 #import "TLYShyScrollViewController.h"
-#import "../Categories/UIScrollView+Helpers.h"
+#import "UIScrollView+Helpers.h"
 
 
 @implementation TLYShyScrollViewController
