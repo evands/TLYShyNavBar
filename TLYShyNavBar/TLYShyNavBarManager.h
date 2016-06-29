@@ -71,6 +71,11 @@
  */
 @property (nonatomic) TLYShyNavBarFade fadeBehavior;
 
+/* Choose how the extension fades as it hides/appears.
+ * Defaults to FadeNavbar
+ */
+@property (nonatomic) TLYShyNavBarFade extensionFadeBehavior;
+
 /* Use this to set if the controller have any kind of custom refresh control
  */
 @property (nonatomic) BOOL hasCustomRefreshControl;

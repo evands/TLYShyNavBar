@@ -478,6 +478,14 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
     self.previousYOffset = NAN;
 }
 
+- (void)setExtensionFadeBehavior:(TLYShyNavBarFade)extensionFadeBehavior {
+    self.extensionController.fadeBehavior = extensionFadeBehavior;
+}
+
+- (TLYShyNavBarFade)extensionFadeBehavior {
+    return self.extensionController.fadeBehavior;
+}
+
 #pragma mark - UIScrollViewDelegate methods
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
