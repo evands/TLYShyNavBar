@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "TLYShyNavBar"
-  s.version      = "1.1.0"
+  s.version      = "1.1.2"
   s.summary      = "TLYShyNavBar makes your UINavigationBar expand/shrink by adding just a single line. It also comes with extension view support!"
 
   s.description  = <<-DESC
